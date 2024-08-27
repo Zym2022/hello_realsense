@@ -17,10 +17,6 @@ simpleVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr template_cloud, pcl::PointClo
   return (viewer);
 }
 
-const int camera_frame_width  = 848;
-const int camera_frame_height = 480;
-const int camera_fps          = 30;
-
 int main(int argc, char * argv[]) try
 {
   if(argc < 2)

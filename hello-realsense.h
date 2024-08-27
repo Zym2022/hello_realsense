@@ -20,6 +20,10 @@
 #include <time.h>
 #include <tbb/parallel_for.h>
 
+const int camera_frame_width  = 848;
+const int camera_frame_height = 480;
+const int camera_fps          = 30;
+
 // Struct for managing rotation of pointcloud view
 struct state {
     state() : yaw(0.0), pitch(0.0), last_x(0.0), last_y(0.0),
