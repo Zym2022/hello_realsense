@@ -19,15 +19,10 @@ simpleVis(pcl::PointCloud<pcl::PointXYZ>::ConstPtr template_cloud, pcl::PointClo
 
 int main(int argc, char * argv[]) try
 {
-  if(argc < 2)
-  {
-    printf("No target PCD file given!\n");
-    return(-1);
-  }
-
   // load template file
   std::vector<FeatureCloud> object_templates;
-  std::ifstream input_stream(argv[1]);
+  std::ifstream input_stream(py2var_.template_list_path);
+  
   object_templates.resize(0);
   std::string pcd_filename;
   while(input_stream.good())
@@ -41,7 +36,13 @@ int main(int argc, char * argv[]) try
     object_templates.push_back(template_cloud);
   }
   input_stream.close();
-
+  
+  if (object_templates.size() < 1)
+  {
+    printf("No template found!\n");
+    return(-1);
+  }
+  std::cout << "The number of templates is: " << object_templates.size() << std::endl;
   // Set the TemplateAlignment inputs
   TemplateAlignment template_align;
   for (size_t i = 0;i<object_templates.size();i++)
@@ -57,14 +58,13 @@ int main(int argc, char * argv[]) try
   boost::shared_ptr<rs2::pipeline> pipe(new rs2::pipeline);
   rs2::config cfg;
 
-  bool not_from_bag = true;
-  if (not_from_bag) {
-      cfg.enable_stream(RS2_STREAM_COLOR, camera_frame_width, camera_frame_height, RS2_FORMAT_BGR8, camera_fps);
-      cfg.enable_stream(RS2_STREAM_DEPTH, camera_frame_width, camera_frame_height, RS2_FORMAT_Z16,  camera_fps);
+  if (py2var_.not_from_bag) {
+      cfg.enable_stream(RS2_STREAM_COLOR, py2var_.camera_frame_width, py2var_.camera_frame_height, RS2_FORMAT_BGR8, py2var_.camera_fps);
+      cfg.enable_stream(RS2_STREAM_DEPTH, py2var_.camera_frame_width, py2var_.camera_frame_height, RS2_FORMAT_Z16,  py2var_.camera_fps);
   }
   else
-      cfg.enable_device_from_file("/home/zju/Documents/405.bag");
-
+      cfg.enable_device_from_file(py2var_.bag_path);
+      
   // Start streaming with default recommended configuration
   pipe->start(cfg);
 
@@ -117,9 +117,19 @@ int main(int argc, char * argv[]) try
     printf ("\n");
     printf ("t = < %0.3f, %0.3f, %0.3f >\n", translation (0), translation (1), translation (2));
 
-    // pcl::visualization::Camera camera;
-    // viewer->getCameraParameters(camera);
-    // std::cout << camera.pos[0] << " " << camera.pos[1] << " " << camera.pos[2] << " " << camera.view[0] << " " << camera.view[1] << " " << camera.view[2] << std::endl;
+    var2py_.best_fitness_score = best_alignment.fitness_score;
+    var2py_.rotation_00 = rotation (0,0);
+    var2py_.rotation_01 = rotation (0,1);
+    var2py_.rotation_02 = rotation (0,2);
+    var2py_.rotation_10 = rotation (1,0);
+    var2py_.rotation_11 = rotation (1,1);
+    var2py_.rotation_12 = rotation (1,2);
+    var2py_.rotation_20 = rotation (2,0);
+    var2py_.rotation_21 = rotation (2,1);
+    var2py_.rotation_22 = rotation (2,2);
+    var2py_.translation_x = translation (0);
+    var2py_.translation_y = translation (1);
+    var2py_.translation_z = translation (2);
 
     pcl::transformPointCloud (*best_template.getPointCloud (), *transformed_cloud, best_alignment.final_transformation);
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> template_color(transformed_cloud, 0 , 255, 0);
@@ -127,10 +137,6 @@ int main(int argc, char * argv[]) try
     viewer->updatePointCloud<pcl::PointXYZ>(target_cloud.getPointCloud(), target_color, "target cloud");
     viewer->updatePointCloud<pcl::PointXYZ>(transformed_cloud, template_color, "template cloud");
     viewer->spinOnce(100);
-    // plotter->clearPlots();
-    // plotter->addFeatureHistogram(*target_cloud.getLocalFeatures(), 100);
-
-    // plotter->spinOnce(100);
   }
   return EXIT_SUCCESS;
 }

@@ -24,6 +24,47 @@ const int camera_frame_width  = 848;
 const int camera_frame_height = 480;
 const int camera_fps          = 30;
 
+// put the variables needed by python into this struct
+struct Var2Py {
+  float best_fitness_score;
+  float rotation_00;
+  float rotation_01;
+  float rotation_02;
+  float rotation_10;
+  float rotation_11;
+  float rotation_12;
+  float rotation_20;
+  float rotation_21;
+  float rotation_22;
+
+  float translation_x;
+  float translation_y;
+  float translation_z;
+};
+
+struct Py2Var {
+    int camera_frame_width;
+    int camera_frame_height;
+    int camera_fps;
+
+    char* template_list_path;
+
+    bool not_from_bag;
+    char* bag_path;
+};
+
+Var2Py var2py_ = {1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0};
+Py2Var py2var_ = {1, 1, 30, " ", true, " "};
+
+// extern Cpp declaration
+extern "C"
+{
+  int main(int argc, char* argv[]);
+
+  Var2Py* get_var2py() { return &var2py_; };
+  void set_py2var(Py2Var* vars) { py2var_ = *vars; };
+}
+
 // Struct for managing rotation of pointcloud view
 struct state {
     state() : yaw(0.0), pitch(0.0), last_x(0.0), last_y(0.0),

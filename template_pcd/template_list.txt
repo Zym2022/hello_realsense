@@ -1,0 +1,6 @@
+/home/zju/realsense_ws/template_pcd/1.pcd
+/home/zju/realsense_ws/template_pcd/2.pcd
+/home/zju/realsense_ws/template_pcd/3.pcd
+/home/zju/realsense_ws/template_pcd/4.pcd
+/home/zju/realsense_ws/template_pcd/5.pcd
+/home/zju/realsense_ws/template_pcd/6.pcd

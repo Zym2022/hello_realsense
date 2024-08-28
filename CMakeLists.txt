@@ -20,11 +20,12 @@ add_definitions(-DBOOST_ALL_DYN_LINK)
 # OpenMP
 find_package(TBB REQUIRED)
 
-add_executable(hello-realsense hello-realsense.cpp)
-add_executable(shoot_templete shoot_templete.cpp)
+add_library(hello-realsense SHARED hello-realsense.cpp)
+# add_executable(hello-realsense hello-realsense.cpp)
+# add_executable(shoot_template shoot_template.cpp)
 
 target_link_libraries (hello-realsense pthread ${realsense2_LIBRARY} ${PCL_LIBRARIES} TBB::tbb)
-target_link_libraries (shoot_templete pthread ${realsense2_LIBRARY} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
+# target_link_libraries (shoot_template pthread ${realsense2_LIBRARY} ${PCL_LIBRARIES} ${Boost_LIBRARIES})
 
 install(TARGETS hello-realsense RUNTIME DESTINATION bin)
 
